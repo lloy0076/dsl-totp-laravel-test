@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\request;
+use Illuminate\Support\Str;
+use OTPHP\TOTP;
 
 class HomeController extends Controller
 {
@@ -36,6 +38,12 @@ class HomeController extends Controller
     {
         $newToken = $request->user()->getApiToken();
 
-        return view('generate_token', ['newToken' => $newToken]);
+        $totp = TOTP::create();
+        $totp->setLabel($request->user()->email);
+
+        $provisioningUri = $totp->getProvisioningUri();
+
+        return view('generate_token', ['newToken' => $newToken, 'totp' => $totp->now(), 'provisioning_uri' =>
+            Str::limit($provisioningUri, 256)]);
     }
 }

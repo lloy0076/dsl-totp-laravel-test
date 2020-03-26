@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <div class="row justify-content-center">
-            <div class="col-md-11">
+            <div class="col-md-12">
                 <h1>Dashboard</h1>
                 @if (session('status'))
                     <div class="alert alert-success" role="alert">
