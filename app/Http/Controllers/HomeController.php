@@ -25,4 +25,17 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    /**
+     * Generate a new token.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function generateToken(Request $request)
+    {
+        $newToken = $request->user()->getApiToken();
+
+        return view('generate_token', ['newToken' => $newToken]);
+    }
 }
