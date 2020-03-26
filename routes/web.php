@@ -23,3 +23,5 @@ Route::any('/newToken', 'HomeController@generateToken')->name('generateToken');
 Route::any('/qrcode', 'HomeController@generateQr')->name('generateQr');
 Route::any('/verify', 'HomeController@verify')->name('verify');
 Route::any('/performVerify', 'HomeController@performVerify')->name('performVerify');
+Route::any('/info', 'HomeController@info')->name('info');
+Route::any('/clear', 'HomeController@clear')->name('clear');

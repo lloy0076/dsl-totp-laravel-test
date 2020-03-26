@@ -37,15 +37,17 @@
                             <a class="nav-link" href="{{ route('generateToken') }}">Generate Token</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('generateQr') }}">Generate QR</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="{{ route('verify') }}">Verify</a>
+                        </li>
+                        <li class="n"
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('generateQr') }}" target="_blank">Generate QR</a>
                         </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
+
                         <!-- Authentication Links -->
                         @guest
                             <li class="nav-item">
@@ -63,6 +65,9 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('info') }}">Info</a>
+                                    <a class="dropdown-item" href="{{ route('clear') }}">Clear</a>
+                                    <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
