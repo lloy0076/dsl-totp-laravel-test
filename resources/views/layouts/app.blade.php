@@ -33,7 +33,15 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('generateToken') }}">Generate Token</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('generateQr') }}">Generate QR</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('verify') }}">Verify</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

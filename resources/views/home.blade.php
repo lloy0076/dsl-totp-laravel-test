@@ -11,11 +11,15 @@
                     </div>
                 @endif
 
+                @if (session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <hr />
 
-                <form action="{{ route('generateToken') }}" method="POST">
-                    {{ csrf_field() }}
-
+                <form action="{{ route('generateToken') }}" method="GET">
                     <div class="form-group">
                         <input name="submit" id="submit" class="btn btn-primary" type="submit" value="Generate Token">
                     </div>

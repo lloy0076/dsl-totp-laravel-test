@@ -19,5 +19,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::post('/newToken', 'HomeController@generateToken')->name('generateToken');
+Route::any('/home', 'HomeController@index')->name('home');
+Route::any('/newToken', 'HomeController@generateToken')->name('generateToken');
+Route::any('/qrcode', 'HomeController@generateQr')->name('generateQr');
+Route::any('/verify', 'HomeController@verify')->name('verify');
+Route::any('/performVerify', 'HomeController@performVerify')->name('performVerify');
