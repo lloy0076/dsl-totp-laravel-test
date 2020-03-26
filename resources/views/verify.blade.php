@@ -11,6 +11,12 @@
                     </div>
                 @endif
 
+                @if (session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <hr />
 
                 <form action="{{ route('performVerify') }}" method="POST">

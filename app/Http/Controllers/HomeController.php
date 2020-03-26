@@ -31,7 +31,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('welcome');
     }
 
     /**
@@ -62,11 +62,7 @@ class HomeController extends Controller
             Log::debug('Using session provisioning URI.');
             $provisioningUri = Session::get('provisioning-uri');
         } else {
-            Log::debug('Generating a TOTP.');
-            $totp = TOTP::create();
-            $totp->setLabel($request->user()->email);
-
-            $provisioningUri = $totp->getProvisioningUri();
+            return redirect('welcome')->with('error', 'Generate a secret first.');
         }
 
         Log::info("Trying to encode $provisioningUri with secret " . Session::get('secret') . ".");
@@ -95,11 +91,11 @@ class HomeController extends Controller
         $verification = $request->input('verification');
 
         if (!$verification) {
-            return redirect('home')->with('error', 'No one time password was given.');
+            return redirect('verify')->with('error', 'No one time password was given.');
         }
 
         if (!Session::get('secret') || !Session::get('provisioning-uri')) {
-            return redirect('home')->with('error', 'Generate a secret first.');
+            return redirect('welcome')->with('error', 'Generate a secret first.');
         }
 
         $provisioningUri = Session::get('provisioning-uri');
@@ -111,7 +107,7 @@ class HomeController extends Controller
         if ($verified) {
             return redirect('home')->with('status', "Code '$verification' successfully verified.");
         } else {
-            return redirect('home')->with('error', "Code '$verification' is invalid.");
+            return redirect('verify')->with('error', "Code '$verification' is invalid.");
         }
     }
 }
