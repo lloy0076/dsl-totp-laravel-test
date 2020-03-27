@@ -40,7 +40,8 @@ class HomeController extends Controller
      */
     public function generateToken(Request $request)
     {
-        $newToken = $request->user()->getApiToken();
+        $keepOthers = $request->input('keep_others') ? true : false;
+        $newToken = $request->user()->getApiToken($keepOthers);
 
         $totp = TOTP::create();
         $totp->setLabel($request->user()->email);
@@ -72,7 +73,6 @@ class HomeController extends Controller
             return redirect('welcome')->with('error', 'Generate a secret first.');
         }
 
-        Log::info("Trying to encode $provisioningUri with secret " . Session::get('secret') . ".");
         $qrCode = new QrCode($provisioningUri);
 
         return response($qrCode->writeString())->withHeaders(['Content-Type' => $qrCode->getContentType()]);

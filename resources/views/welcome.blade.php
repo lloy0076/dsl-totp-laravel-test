@@ -20,10 +20,19 @@
                 <hr/>
 
                 <div>
-                    <a href="{{ route('generateToken') }}" class="btn btn-primary">Generate Token</a>
+                    <form action="{{ route('generateToken') }}" method="GET">
+                        <div class="form-check">
+                            <input type="checkbox" name="keep_others" id="keep_others" class="form-check-input">
+                            <label class="form-check-label" for="keep_others">Keep Others</label>
+                        </div>
+                        <div class="form-group">
+                            <input name="submit" id="submit" class="btn btn-primary" type="submit"
+                                   value="Generate Token">
+                        </div>
+                    </form>
                 </div>
 
-                <hr />
+                <hr/>
 
                 <div style="font-size: smaller;">
                     Copyright &copy; 2020. David Lloyd&nbsp;&lt;<a href="mailto:lloy006 [at] adam.com
