@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\StorageRepositoryContract;
 use Endroid\QrCode\QrCode;
 use Illuminate\Http\request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use OTPHP\Factory;
 use OTPHP\TOTP;
@@ -13,13 +12,19 @@ use OTPHP\TOTP;
 class HomeController extends Controller
 {
     /**
+     * @var StorageRepositoryContract
+     */
+    protected $storage;
+
+    /**
      * Create a new controller instance.
      *
-     * @return void
+     * @param StorageRepositoryContract $repository
      */
-    public function __construct()
+    public function __construct(StorageRepositoryContract $repository)
     {
         $this->middleware('auth');
+        $this->storage = $repository;
     }
 
     /**
@@ -48,15 +53,17 @@ class HomeController extends Controller
 
         $provisioningUri = $totp->getProvisioningUri();
 
-        Session::put('token', $newToken);
-        Session::put('provisioning-uri', $provisioningUri);
-        Session::put('secret', $totp->getSecret());
+        $this->storage->setToken($newToken);
+        $this->storage->setProvisioningUri($provisioningUri);
+        $this->storage->setSecret($totp->getSecret());
 
         return view('generate_token',
-            ['newToken' => $newToken,
+            [
+                'newToken' => $newToken,
                 'totp' => $totp->now(),
                 'provisioning_uri' =>
-                    Str::limit($provisioningUri, 256)]);
+                    Str::limit($provisioningUri, 256),
+            ]);
     }
 
     /**
@@ -67,8 +74,8 @@ class HomeController extends Controller
      */
     public function generateQr(Request $request)
     {
-        if (Session::get('provisioning-uri')) {
-            $provisioningUri = Session::get('provisioning-uri');
+        if ($this->storage->getProvisioningUri()) {
+            $provisioningUri = $this->storage->getProvisioningUri();
         } else {
             return redirect('welcome')->with('error', 'Generate a secret first.');
         }
@@ -86,7 +93,7 @@ class HomeController extends Controller
      */
     public function verify(Request $request)
     {
-        if (!Session::get('provisioning-uri')) {
+        if (!$this->storage->getProvisioningUri()) {
             return redirect('welcome')->with('error', 'Generate a secret first.');
         }
 
@@ -107,11 +114,11 @@ class HomeController extends Controller
             return redirect('verify')->with('error', 'No one time password was given.');
         }
 
-        if (!Session::get('secret') || !Session::get('provisioning-uri')) {
+        if (!$this->storage->getSecret() || !$this->storage->getProvisioningUri()) {
             return redirect('welcome')->with('error', 'Generate a secret first.');
         }
 
-        $provisioningUri = Session::get('provisioning-uri');
+        $provisioningUri = $this->storage->getProvisioningUri();
 
         $otp = Factory::loadFromProvisioningUri($provisioningUri);
 
@@ -133,9 +140,9 @@ class HomeController extends Controller
     public function info(Request $request)
     {
         $label = $request->user()->email;
-        $token = Session::get('token') ?? '<No Token Set>';
-        $secret = Session::get('secret') ?? '<No Secret>';
-        $provisioningUri = Session::get('provisioning-uri') ?? '<No Provisioning Uri>';
+        $token = $this->storage->getToken() ?? '<No Token Set>';
+        $secret = $this->storage->getSecret() ?? '<No Secret>';
+        $provisioningUri = $this->storage->getProvisioningUri() ?? '<No Provisioning Uri>';
 
         return view('info',
             [
@@ -153,12 +160,9 @@ class HomeController extends Controller
      * @param \Request $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function clear(\Request $request) {
-        $remove = ['token', 'secret', 'provisioning-uri'];
-
-        foreach($remove as $key) {
-            Session::remove($key);
-        }
+    public function clear(\Request $request)
+    {
+        $this->storage->forget();
 
         return redirect('welcome')->with('status', 'Token, secret and provisioning URI removed.');
     }
