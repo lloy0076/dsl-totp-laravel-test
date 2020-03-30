@@ -39,7 +39,8 @@
                         <a class="nav-link" href="{{ route('generateToken', ['keep_others' => false]) }}">Generate
                             Token</a>
                     </li>
-                    @if (Session::get('provisioning-uri') && Session::get('secret'))
+                    @if (resolve(\App\Repositories\StorageRepositoryContract::class)->getSecret()
+                            && resolve (\App\Repositories\StorageRepositoryContract::class)->getProvisioningUri())
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('verify') }}">Verify</a>
                         </li>
