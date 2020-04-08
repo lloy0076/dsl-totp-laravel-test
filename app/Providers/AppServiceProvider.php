@@ -10,7 +10,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     public $singletons = [
-        //StorageRepositoryContract::class => SessionStorageRepository::class,
+//        StorageRepositoryContract::class => SessionStorageRepository::class,
         StorageRepositoryContract::class => DataStorageRepository::class,
     ];
 
