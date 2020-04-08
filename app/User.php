@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\UserInfo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
@@ -41,6 +42,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function userInfo() {
+        return $this->hasOne(UserInfo::class);
+    }
 
     /**
      * Get the API token.
