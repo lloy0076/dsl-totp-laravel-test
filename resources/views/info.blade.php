@@ -34,16 +34,18 @@
                     <thead>
                     <tr>
                         <th>Label</th>
+                        <th>Now</th>
                         <th>Secret</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td scope="row">{{ $label }}</td>
+                        <td>{{ $now }}</td>
                         <td>{{ $secret }}</td>
                     </tr>
                     <tr>
-                        <td scope="row" colspan="2">{{ $provisioning_uri }}</td>
+                        <td scope="row" colspan="3">{{ $provisioning_uri }}</td>
                     </tr>
                     </tbody>
                 </table>

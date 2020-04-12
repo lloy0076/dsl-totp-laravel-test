@@ -48,19 +48,18 @@ class HomeController extends Controller
         $keepOthers = $request->input('keep_others') ? true : false;
         $newToken = $request->user()->getApiToken($keepOthers);
 
-        $totp = TOTP::create();
-        $totp->setLabel($request->user()->email);
+        $labelledTotp = $this->getLabelledTotp($request->user()->email);
 
-        $provisioningUri = $totp->getProvisioningUri();
+        $provisioningUri = $labelledTotp->getProvisioningUri();
 
         $this->storage->setToken($newToken);
         $this->storage->setProvisioningUri($provisioningUri);
-        $this->storage->setSecret($totp->getSecret());
+        $this->storage->setSecret($labelledTotp->getSecret());
 
         return view('generate_token',
             [
                 'newToken' => $newToken,
-                'totp' => $totp->now(),
+                'totp' => $labelledTotp->now(),
                 'provisioning_uri' =>
                     Str::limit($provisioningUri, 256),
             ]);
@@ -118,9 +117,7 @@ class HomeController extends Controller
             return redirect('welcome')->with('error', 'Generate a secret first.');
         }
 
-        $provisioningUri = $this->storage->getProvisioningUri();
-
-        $otp = Factory::loadFromProvisioningUri($provisioningUri);
+        $otp = $this->getProvidionsedOtp();
 
         $verified = $otp->verify($verification);
 
@@ -139,14 +136,17 @@ class HomeController extends Controller
      */
     public function info(Request $request)
     {
-        $label = $request->user()->email;
+        $provisionedOtp = $this->getProvidionsedOtp();
+        $label = $provisionedOtp->getLabel();
+        $secret = $provisionedOtp->getSecret();
+        $provisioningUri = $provisionedOtp->getProvisioningUri();
+
         $token = $this->storage->getToken() ?? '<No Token Set>';
-        $secret = $this->storage->getSecret() ?? '<No Secret>';
-        $provisioningUri = $this->storage->getProvisioningUri() ?? '<No Provisioning Uri>';
 
         return view('info',
             [
                 'label' => $label,
+                'now' => $provisionedOtp->now(),
                 'secret' => $secret,
                 'provisioning_uri' => $provisioningUri,
                 'token' => $token,
@@ -165,6 +165,29 @@ class HomeController extends Controller
         $this->storage->forget();
 
         return redirect('welcome')->with('status', 'Token, secret and provisioning URI removed.');
+    }
+
+    /**
+     * @param string $email
+     * @return \OTPHP\TOTPInterface
+     */
+    protected function getLabelledTotp($email): \OTPHP\TOTPInterface
+    {
+        $totp = TOTP::create();
+        $totp->setLabel($email);
+
+        return $totp;
+    }
+
+    /**
+     * @return \OTPHP\OTPInterface
+     */
+    protected function getProvidionsedOtp(): \OTPHP\OTPInterface
+    {
+        $provisioningUri = $this->storage->getProvisioningUri();
+        $otp = Factory::loadFromProvisioningUri($provisioningUri);
+
+        return $otp;
     }
 
 }
