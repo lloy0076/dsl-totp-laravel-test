@@ -43,6 +43,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * Get the user info relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function userInfo() {
         return $this->hasOne(UserInfo::class);
     }
